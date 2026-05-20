@@ -103,22 +103,22 @@
     <header>
       <h1>AccountLevelGate — Test Results</h1>
       <p>Experiment: <code>specs.premium.domains.AccountLevelGate</code> &nbsp;|&nbsp; FED: <code>wix-private/my-domains</code> &nbsp;|&nbsp; Entry: <code>manage.wix.com/account/domains</code></p>
-      <p style="margin-top:4px;">Run 4 · May 20, 2026 · 41 tests in scope · automation user: <code>wixqatestdomainsautomation@test.com</code> · premium + free sites + suspended domain</p>
+      <p style="margin-top:4px;">Run 5 · May 20, 2026 · 41 tests in scope · automation user: <code>wixqatestdomainsautomation@test.com</code> · premium + free sites + suspended domain · taken-domain filter dropped</p>
     </header>
 
     <div class="stats">
       <div class="stat-card"><div class="number">41</div><div class="label">In Scope</div></div>
-      <div class="stat-card pass"><div class="number">15</div><div class="label">Passed</div></div>
-      <div class="stat-card fail"><div class="number">2</div><div class="label">Failed</div></div>
+      <div class="stat-card pass"><div class="number">16</div><div class="label">Passed</div></div>
+      <div class="stat-card fail"><div class="number">4</div><div class="label">Failed</div></div>
       <div class="stat-card skip"><div class="number">24</div><div class="label">Documented Stubs</div></div>
-      <div class="stat-card rate"><div class="number">88%</div><div class="label">Pass Rate*</div></div>
+      <div class="stat-card rate"><div class="number">80%</div><div class="label">Pass Rate*</div></div>
     </div>
-    <p style="text-align:center; color:#8e8e93; font-size:12px; margin-bottom:24px;">*Pass rate computed on 17 tests that executed (15 / 17). 24 tests remain <code>test.fixme</code> stubs — they need additional persona accounts (no-sites, 5+ sites, unassigned non-suspended domain) or are <code>--grep-invert "taken"</code> excluded.</p>
+    <p style="text-align:center; color:#8e8e93; font-size:12px; margin-bottom:24px;">*Pass rate on 20 executed (16 / 20). 10 passed first try, 6 passed on retry (modal flow is multi-step and flake-prone). 24 tests remain <code>test.fixme</code> stubs needing additional persona accounts (no-sites, 5+ sites, unassigned non-suspended domain) or implementation effort.</p>
 
     <div class="progress-bar">
-      <div class="progress-fill pass" style="width: 36.6%;"></div>
-      <div class="progress-fill fail" style="width: 4.9%;"></div>
-      <div class="progress-fill skip" style="width: 58.5%;"></div>
+      <div class="progress-fill pass" style="width: 39%;"></div>
+      <div class="progress-fill fail" style="width: 9.8%;"></div>
+      <div class="progress-fill skip" style="width: 51.2%;"></div>
     </div>
 
     <!-- Changelog vs previous publish -->
@@ -135,7 +135,9 @@
         <li>§4 Assign tests confirmed blocked on this account: only unassigned domain is ICANN-suspended, so kebab does not expose Assign action</li>
         <li>Run 4: confirmed account has 2 sites (1 premium + 1 free), unlocked 6 more §2/§5 has-sites tests</li>
         <li>Implemented site-selector modal flow tests: title interpolation, premium badge, close modal, Escape, accessibility</li>
-        <li>Pass rate trajectory: 37.5% → 71% → 86% → 90% → <strong>88%</strong> (slightly down because we added more tests, but real-pass count went 9 → 15)</li>
+        <li>Run 5: dropped <code>--grep-invert "taken"</code> filter — unlocked 2 §3 Connect tests (both fail, surfacing a real product question: no Connect CTA visible on the results page for taken domains)</li>
+        <li>Run 5: added <code>retries: 1</code> to local config — 6 flaky tests recovered (modal flow is multi-step)</li>
+        <li>Real-pass count trajectory: 4 → 6 → 9 → 15 → <strong>16</strong></li>
       </ul>
     </div>
 
@@ -198,13 +200,13 @@
     <div class="section">
       <div class="section-header" onclick="toggle('s3')">
         <span><span class="toggle-icon" id="s3-icon">&#9660;</span> Section 3 — Connect Flow</span>
-        <span class="badge badge-skip">0 / 0 run · 2 excluded ("taken domain") · 9 blocked</span>
+        <span class="badge badge-fail">0 / 2 passed · 8 blocked</span>
       </div>
       <div id="s3" class="collapsible">
         <table>
           <tr><th>Pri</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
-          <tr><td><span class="pri pri-p0">P0</span></td><td>Searching taken domain surfaces Connect CTA</td><td><span class="status status-skip">&#9209; EXCLUDED</span></td><td class="finding-skip">Excluded by --grep-invert "taken" per QA</td></tr>
-          <tr><td><span class="pri pri-p0">P0</span></td><td>Clicking Connect opens upgrade modal or site selector</td><td><span class="status status-skip">&#9209; EXCLUDED</span></td><td class="finding-skip">Excluded by --grep-invert "taken" per QA</td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Searching taken domain (wix.com) surfaces Connect CTA</td><td><span class="status status-fail">&#10007; FAIL</span></td><td class="finding-fail">No element matching /Connect/i found on the gate's results page after searching wix.com. Real product question: <strong>does the new gate show a Connect CTA for taken domains?</strong> Manual verification needed.</td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Clicking Connect opens upgrade modal or site selector</td><td><span class="status status-fail">&#10007; FAIL</span></td><td class="finding-fail">Same root cause — Connect CTA is the prerequisite for this test.</td></tr>
           <tr><td><span class="pri pri-p0">P0</span></td><td>Has-sites Free → site selector w/ "Assign {domain} to a site"</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs free-site</span></td></tr>
           <tr><td><span class="pri pri-p0">P0</span></td><td>Has-sites Select Free → site-level upgrade</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs free-site</span></td></tr>
           <tr><td><span class="pri pri-p0">P0</span></td><td>Has-sites Select Premium → site-level Connect</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs premium-site</span></td></tr>
@@ -257,7 +259,36 @@
 
     <!-- Failure detail -->
     <div class="section" style="border-left: 4px solid #ff3b30;">
-      <div class="section-header"><span>Failures (2) — Evidence &amp; Root Cause</span></div>
+      <div class="section-header"><span>Failures (4) — Evidence &amp; Root Cause</span></div>
+
+      <div class="issue-card">
+        <div class="issue-header">
+          <strong>§3 P0 — Searching wix.com surfaces a Connect CTA</strong>
+          <span class="tag tag-fail">PRODUCT / SELECTOR</span>
+        </div>
+        <div class="issue-actions">
+          <span class="action-btn" onclick="toggleDetail('detail-connect-cta')">View Root Cause &amp; Fix</span>
+        </div>
+        <div class="issue-detail" id="detail-connect-cta">
+          <div class="detail-item"><strong>Symptom:</strong> Timeout waiting for <code>fl.getByRole('button', { name: /Connect/i })</code> on the gate's results page after searching <code>wix.com</code>.</div>
+          <div class="detail-item"><strong>Open question:</strong> Does the new AccountLevelGate's results page show a Connect CTA on the taken-domain card? The Run 5 result suggests it might not — or the CTA is rendered as a link/div, not a button. <strong>Manual verification needed.</strong></div>
+          <div class="detail-item"><strong>Next step:</strong> Visit <code>manage.wix.com/account/domains</code>, click Buy a Domain, search <code>wix.com</code>, and screenshot/inspect what appears for the taken card. Once we know what the CTA looks like (button text, role, data-hook), the test can be updated in 5 min.</div>
+        </div>
+      </div>
+
+      <div class="issue-card">
+        <div class="issue-header">
+          <strong>§3 P0 — Clicking Connect opens upgrade modal or site selector</strong>
+          <span class="tag tag-fail">DEPENDENT</span>
+        </div>
+        <div class="issue-actions">
+          <span class="action-btn" onclick="toggleDetail('detail-connect-modal')">View Root Cause &amp; Fix</span>
+        </div>
+        <div class="issue-detail" id="detail-connect-modal">
+          <div class="detail-item"><strong>Symptom:</strong> Same — couldn't click Connect because the CTA didn't surface.</div>
+          <div class="detail-item"><strong>Fix:</strong> Unblocks automatically once the CTA discovery above is resolved.</div>
+        </div>
+      </div>
 
       <div class="issue-card">
         <div class="issue-header">
@@ -303,7 +334,7 @@
     </div>
 
     <div class="footer">
-      Generated by QA Automation &nbsp;|&nbsp; Guy Meir &nbsp;|&nbsp; Domains Team &nbsp;|&nbsp; May 20, 2026 · Run 4 · 15:18 IDT
+      Generated by QA Automation &nbsp;|&nbsp; Guy Meir &nbsp;|&nbsp; Domains Team &nbsp;|&nbsp; May 20, 2026 · Run 5 · 15:34 IDT
       <br>
       Spec: <code>premium-qa-cdd/02-Domains/account-level-gate/sled/tests/e2e/account-level-gate.spec.ts</code>
       &nbsp;|&nbsp; Repo: <a href="https://github.com/guymeir1604/account-level-gate-test-results" style="color:#007aff;">github.com/guymeir1604/account-level-gate-test-results</a>
