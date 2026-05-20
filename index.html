@@ -103,35 +103,37 @@
     <header>
       <h1>AccountLevelGate — Test Results</h1>
       <p>Experiment: <code>specs.premium.domains.AccountLevelGate</code> &nbsp;|&nbsp; FED: <code>wix-private/my-domains</code> &nbsp;|&nbsp; Entry: <code>manage.wix.com/account/domains</code></p>
-      <p style="margin-top:4px;">Run 2 · May 20, 2026 · 41 tests in scope · automation user: <code>wixqatestdomainsautomation@test.com</code></p>
+      <p style="margin-top:4px;">Run 3 · May 20, 2026 · 41 tests in scope · automation user: <code>wixqatestdomainsautomation@test.com</code> · premium MSID: <code>5abefded-…</code></p>
     </header>
 
     <div class="stats">
       <div class="stat-card"><div class="number">41</div><div class="label">In Scope</div></div>
-      <div class="stat-card pass"><div class="number">6</div><div class="label">Passed</div></div>
+      <div class="stat-card pass"><div class="number">9</div><div class="label">Passed</div></div>
       <div class="stat-card fail"><div class="number">1</div><div class="label">Failed</div></div>
-      <div class="stat-card skip"><div class="number">34</div><div class="label">Documented Stubs</div></div>
-      <div class="stat-card rate"><div class="number">86%</div><div class="label">Pass Rate*</div></div>
+      <div class="stat-card skip"><div class="number">31</div><div class="label">Documented Stubs</div></div>
+      <div class="stat-card rate"><div class="number">90%</div><div class="label">Pass Rate*</div></div>
     </div>
-    <p style="text-align:center; color:#8e8e93; font-size:12px; margin-bottom:24px;">*Pass rate computed on 7 tests that executed (6 / 7). 34 tests are <code>test.fixme</code> stubs documenting your plan — they need different persona accounts to execute. Tests that complete payment / checkout were removed from scope.</p>
+    <p style="text-align:center; color:#8e8e93; font-size:12px; margin-bottom:24px;">*Pass rate computed on 10 tests that executed (9 / 10). 31 tests are <code>test.fixme</code> stubs documenting your plan — they need different persona accounts (free-site, no-sites, 5+ sites, unassigned non-suspended domain). Tests that complete payment / checkout were removed from scope.</p>
 
     <div class="progress-bar">
-      <div class="progress-fill pass" style="width: 14.6%;"></div>
+      <div class="progress-fill pass" style="width: 22%;"></div>
       <div class="progress-fill fail" style="width: 2.4%;"></div>
-      <div class="progress-fill skip" style="width: 83%;"></div>
+      <div class="progress-fill skip" style="width: 75.6%;"></div>
     </div>
 
     <!-- Changelog vs previous publish -->
     <div class="changelog">
       <h3>Changes since first publish</h3>
       <ul>
-        <li>Login retry helper added (4 attempts, exponential backoff) — fixed transient <code>bo.wix.com</code> DNS / timeout flakes</li>
+        <li>Login retry helper added (4 attempts, exponential backoff) — fixed transient <code>bo.wix.com</code> DNS / timeout flakes; recovered 2 failed login attempts in this run</li>
         <li>§2 + §5 tests routed via "Buy a Domain" CTA instead of broken <code>/search</code> direct nav</li>
-        <li>P2 refresh test bumped to 60s iframe-attach timeout — now passing</li>
+        <li><code>searchDomainInGate</code> helper waits for actual result cards (price / domain-card data-hook) instead of just network-idle — unstuck the click-card test</li>
+        <li>P2 refresh test bumped to 60s iframe-attach timeout</li>
         <li>Removed §6 Localization, §7 BI Events, §8 Regression sections (out of scope per QA)</li>
         <li>Removed all tests that complete payment / checkout / package picker (we don't reach cashier)</li>
         <li>Suite went 79 → 54 → 41 tests as scope tightened</li>
-        <li>Pass rate climbed 37.5% → 71% → <strong>86%</strong></li>
+        <li>§4 Assign tests confirmed blocked on this account: only unassigned domain is ICANN-suspended, so kebab does not expose Assign action</li>
+        <li>Pass rate climbed 37.5% → 71% → 86% → <strong>90%</strong></li>
       </ul>
     </div>
 
@@ -139,22 +141,22 @@
     <div class="section">
       <div class="section-header" onclick="toggle('s1')">
         <span><span class="toggle-icon" id="s1-icon">&#9660;</span> Section 1 — Entry &amp; Gate Page</span>
-        <span class="badge badge-pass">5 / 5 passed &nbsp;·&nbsp; 6 blocked</span>
+        <span class="badge badge-mix">6 / 7 passed &nbsp;·&nbsp; 4 blocked</span>
       </div>
       <div id="s1" class="collapsible">
         <table>
           <tr><th>Pri</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
-          <tr><td><span class="pri pri-p0">P0</span></td><td>My Domains list renders with "Buy a Domain" CTA</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">12.6s — CTA + Add Existing CTA visible inside mpContainer iframe</td></tr>
-          <tr><td><span class="pri pri-p0">P0</span></td><td>Clicking "Buy a Domain" opens AccountLevelGate (spec ON)</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">11.4s — Title "Find the perfect domain for your vision" + subtitle rendered</td></tr>
-          <tr><td><span class="pri pri-p0">P0</span></td><td>Voucher banner copy is visible on gate</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">18.4s — Free-1-year banner asserted</td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>My Domains list renders with "Buy a Domain" CTA</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">11.0s — CTA + Add Existing CTA visible inside mpContainer iframe</td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Clicking "Buy a Domain" opens AccountLevelGate (spec ON)</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">9.7s — Title "Find the perfect domain for your vision" + subtitle rendered</td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Voucher banner copy is visible on gate</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">11.4s — Free-1-year banner asserted</td></tr>
           <tr><td><span class="pri pri-p0">P0</span></td><td>/results route always renders AccountLevelGate (regardless of spec)</td><td><span class="status status-skip">&#9209; SKIPPED</span></td><td class="finding-skip">Direct nav broken for this user — iframe never attaches. Marked fixme.</td></tr>
-          <tr><td><span class="pri pri-p1">P1</span></td><td>Direct URL /account/domains lands on My Domains list</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">17.7s — URL + iframe content asserted</td></tr>
-          <tr><td><span class="pri pri-p2">P2</span></td><td>Refresh preserves My Domains list state</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">24.0s — was failing twice before; bumped iframe-attach timeout to 60s</td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>Direct URL /account/domains lands on My Domains list</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">9.4s — URL + iframe content asserted</td></tr>
+          <tr><td><span class="pri pri-p2">P2</span></td><td>Refresh preserves My Domains list state</td><td><span class="status status-fail">&#10007; FAIL</span></td><td class="finding-fail">1.3m timeout — Wix dashboard takes &gt;60s to remount iframe after hard reload. Flaky in headed runs; passed in headless once.</td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Has domains user clicks "Buy a domain" CTA from My Domains</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">49.7s — login retry recovered 2 transient bo.wix.com failures; gate opens + input editable</td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Has domains user clicks "Add an existing domain" &gt; "Connect domain"</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">14.0s — Add Existing dropdown → "Connect a domain you already own" opens connect entry</td></tr>
           <tr><td><span class="pri pri-p0">P0</span></td><td>No sites &amp; No domains user — full persona</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip">Needs no-sites + no-domains user <span class="tag tag-needs-user">needs user</span></td></tr>
           <tr><td><span class="pri pri-p0">P0</span></td><td>Free sites only &amp; No domains</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs user</span></td></tr>
-          <tr><td><span class="pri pri-p0">P0</span></td><td>Premium site &amp; No domains</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs user</span></td></tr>
-          <tr><td><span class="pri pri-p0">P0</span></td><td>Has domains user clicks "Buy a domain" CTA (persona variant)</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs user</span></td></tr>
-          <tr><td><span class="pri pri-p0">P0</span></td><td>Has domains user clicks "Add an existing domain" &gt; "Connect domain"</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs user</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Premium site &amp; No domains</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip">This user has premium site BUT also has a domain — needs a premium-only-no-domains user for the banner copy assertion <span class="tag tag-needs-user">needs user</span></td></tr>
         </table>
       </div>
     </div>
@@ -163,13 +165,13 @@
     <div class="section">
       <div class="section-header" onclick="toggle('s2')">
         <span><span class="toggle-icon" id="s2-icon">&#9660;</span> Section 2 — Purchase Flow (pre-checkout only)</span>
-        <span class="badge badge-mix">1 / 2 passed &nbsp;·&nbsp; 6 blocked</span>
+        <span class="badge badge-pass">2 / 2 passed &nbsp;·&nbsp; 6 blocked</span>
       </div>
       <div id="s2" class="collapsible">
         <table>
           <tr><th>Pri</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
-          <tr><td><span class="pri pri-p0">P0</span></td><td>Search available domain shows results page with pricing block</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">16.6s — via "Buy a Domain" → gate → search → results renders w/ price</td></tr>
-          <tr><td><span class="pri pri-p0">P0</span></td><td>Clicking available domain card navigates forward (split or selector)</td><td><span class="status status-fail">&#10007; FAIL</span></td><td class="finding-fail">12.8s — CTA on results page didn't match button-text candidates. Likely a clickable card (div/a) not a labelled button.</td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Search available domain shows results page with pricing block</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">20.4s — via "Buy a Domain" → gate → search → results renders w/ price</td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Clicking available domain card navigates forward (split or selector)</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">50.6s — fixed by waiting for actual result cards; login retry recovered 2 transient failures</td></tr>
           <tr><td><span class="pri pri-p2">P2</span></td><td>Back navigation from split page (no-sites)</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs no-sites</span></td></tr>
           <tr><td><span class="pri pri-p2">P2</span></td><td>Refresh on split page (no-sites)</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs no-sites</span></td></tr>
           <tr><td><span class="pri pri-p0">P0</span></td><td>Has-sites: Single free site triggers site selector with correct title</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs free-site</span></td></tr>
@@ -213,15 +215,16 @@
     <div class="section">
       <div class="section-header" onclick="toggle('s4')">
         <span><span class="toggle-icon" id="s4-icon">&#9660;</span> Section 4 — Assign Flow</span>
-        <span class="badge badge-skip">0 / 4 run · 4 blocked</span>
+        <span class="badge badge-skip">0 / 4 run · 4 blocked (domain suspended)</span>
       </div>
       <div id="s4" class="collapsible">
+        <p style="padding:12px 20px; font-size:13px; color:#cc1818; background:#fff6f6; border-bottom:1px solid #f0f0f0;"><strong>Finding:</strong> the only unassigned domain on this account is suspended for ICANN verification. Diag confirmed the row kebab menu items are: Edit contact info · Manage DNS records · Transfer away · Transfer to a different Wix account — <strong>no "Assign to site" action</strong>. Tests cannot be triggered until an unassigned non-suspended domain is available on the account.</p>
         <table>
           <tr><th>Pri</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
-          <tr><td><span class="pri pri-p0">P0</span></td><td>Site selector opens from My Domains "Assign to site"</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs unassigned-domain</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Site selector opens from My Domains "Assign to site"</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs unassigned non-suspended domain</span></td></tr>
           <tr><td><span class="pri pri-p0">P0</span></td><td>Free site → site-level upgrade → domain assigned</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs unassigned + free-site</span></td></tr>
-          <tr><td><span class="pri pri-p0">P0</span></td><td>Premium site → success page → domain primary/non-primary</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs unassigned + premium-site</span></td></tr>
-          <tr><td><span class="pri pri-p1">P1</span></td><td>Premium badge + primary-domain indicators in selector</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs has-sites</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Premium site → success page → domain primary/non-primary</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs unassigned non-suspended on premium-site account</span></td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>Premium badge + primary-domain indicators in selector</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs unassigned non-suspended</span></td></tr>
         </table>
       </div>
     </div>
@@ -230,12 +233,12 @@
     <div class="section">
       <div class="section-header" onclick="toggle('s5')">
         <span><span class="toggle-icon" id="s5-icon">&#9660;</span> Section 5 — Site Selector Modal</span>
-        <span class="badge badge-skip">0 / 0 run · 1 auto-skipped (no CTA) · 5 blocked</span>
+        <span class="badge badge-pass">1 / 1 passed · 5 blocked</span>
       </div>
       <div id="s5" class="collapsible">
         <table>
           <tr><th>Pri</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
-          <tr><td><span class="pri pri-p0">P0</span></td><td>Modal title interpolates domain_name correctly (no raw placeholder)</td><td><span class="status status-skip">&#9209; SKIPPED</span></td><td class="finding-skip">Self-skip — purchase CTA on results page didn't match; selector path not reachable here.</td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Modal title interpolates domain_name correctly (no raw placeholder)</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">22.7s — site selector opens after clicking domain card; domain text interpolated in title</td></tr>
           <tr><td><span class="pri pri-p1">P1</span></td><td>List rendering, 4 items per page, search placeholder</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs multi-sites</span></td></tr>
           <tr><td><span class="pri pri-p2">P2</span></td><td>No eligible sites edge case</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs no-sites</span></td></tr>
           <tr><td><span class="pri pri-p2">P2</span></td><td>Empty state on search with no match</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs has-sites</span></td></tr>
@@ -251,32 +254,33 @@
 
       <div class="issue-card">
         <div class="issue-header">
-          <strong>§2 P0 — Clicking available domain card navigates forward (split or selector)</strong>
-          <span class="tag tag-fail">SELECTOR MISS</span>
+          <strong>§1 P2 — Refresh preserves My Domains list state</strong>
+          <span class="tag tag-flake">TIMING — IFRAME REHYDRATION</span>
         </div>
         <div class="issue-actions">
-          <span class="action-btn" onclick="toggleDetail('detail-card')">View Root Cause &amp; Fix</span>
+          <span class="action-btn" onclick="toggleDetail('detail-refresh')">View Root Cause &amp; Fix</span>
         </div>
-        <div class="issue-detail" id="detail-card">
-          <div class="detail-item"><strong>Symptom:</strong> <code>Error: expected a purchase CTA to be visible on results · Expected: true Received: false</code></div>
-          <div class="detail-item"><strong>Where:</strong> <code>account-level-gate.spec.ts:173</code> — after search results render.</div>
-          <div class="detail-item"><strong>Root Cause:</strong> The test searches by <code>getByRole('button', { name })</code> with candidate labels <code>Make It Yours / Get it / Get It / Buy / Add to cart / Add</code> — none match what's actually on the results page. The clickable card is likely a <code>&lt;div&gt;</code> or <code>&lt;a&gt;</code>, or carries a different label (icon-only, "Choose", localised string).</div>
-          <div class="detail-item"><strong>Suggested Fix:</strong> Add a small diagnostic step that dumps <code>fl.locator('button, a').allInnerTexts()</code> on the results page, identify the actual CTA, and either add it to the candidate list or click the TLD card directly (<code>fl.locator('[data-hook="domain-card"]').first().click()</code> or similar). The §5 selector test self-skips for the same reason — fixing this unlocks both.</div>
+        <div class="issue-detail" id="detail-refresh">
+          <div class="detail-item"><strong>Symptom:</strong> <code>TimeoutError: locator.waitFor: Timeout 60000ms exceeded</code> waiting for <code>iframe[src*="mpContainerStaticController"].contentFrame().locator(':text("Domains")')</code> to be visible after <code>page.reload()</code>.</div>
+          <div class="detail-item"><strong>Where:</strong> <code>account-level-gate.spec.ts:103</code> — after page.reload().</div>
+          <div class="detail-item"><strong>Root Cause:</strong> The Wix dashboard takes &gt;60s to remount the <code>mpContainerStaticController</code> iframe + render content after a hard reload in headed Chromium. Headless was faster (24s) and the test passed earlier. This is real-world dashboard latency, not a product bug.</div>
+          <div class="detail-item"><strong>Suggested Fix:</strong> Either bump the global Playwright test timeout above 120s and the inner waits to 90s, or assert only on <code>page.url()</code> containing <code>/account/domains</code> after reload (don't wait for inner iframe content). A simpler version would be more reliable.</div>
         </div>
       </div>
     </div>
 
     <!-- Blockers / next steps -->
     <div class="blockers">
-      <h3>To unlock the 34 pending tests</h3>
+      <h3>To unlock the 31 pending tests</h3>
       <ul>
-        <li><strong>Persona test accounts</strong> — needed for ~30 tests across §1, §2, §3, §4, §5: no-sites + no-domains, free-site only, premium-site only, multi-sites (free + premium), 5+ sites, has unassigned account-level domains. <em>Share emails when ready and I'll flip the stubs.</em></li>
-        <li><strong>Click-card CTA fix</strong> — 1 small diagnostic + selector update would also unlock the §5 modal title test.</li>
+        <li><strong>Unassigned non-suspended domain</strong> — needed for §4 Assign tests (4 tests). Currently the only unassigned domain is ICANN-suspended, so no Assign action appears in the row kebab menu.</li>
+        <li><strong>Persona test accounts</strong> — needed for ~25 tests across §1, §2, §3, §5: no-sites + no-domains, free-site only, premium-site only (no domains), multi-sites (free + premium), 5+ sites.</li>
+        <li><strong>"Taken domain" tests still excluded</strong> — Section 3 Connect-flow tests excluded by <code>--grep-invert "taken"</code> per QA preference.</li>
       </ul>
     </div>
 
     <div class="footer">
-      Generated by QA Automation &nbsp;|&nbsp; Guy Meir &nbsp;|&nbsp; Domains Team &nbsp;|&nbsp; May 20, 2026 · 14:10 IDT
+      Generated by QA Automation &nbsp;|&nbsp; Guy Meir &nbsp;|&nbsp; Domains Team &nbsp;|&nbsp; May 20, 2026 · Run 3 · 14:40 IDT
       <br>
       Spec: <code>premium-qa-cdd/02-Domains/account-level-gate/sled/tests/e2e/account-level-gate.spec.ts</code>
       &nbsp;|&nbsp; Repo: <a href="https://github.com/guymeir1604/account-level-gate-test-results" style="color:#007aff;">github.com/guymeir1604/account-level-gate-test-results</a>
