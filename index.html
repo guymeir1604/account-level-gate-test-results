@@ -1,0 +1,354 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AccountLevelGate — Test Plan Results</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f7; color: #1d1d1f; padding: 24px; }
+    .container { max-width: 1100px; margin: 0 auto; }
+
+    header { text-align: center; margin-bottom: 32px; }
+    header h1 { font-size: 28px; font-weight: 700; margin-bottom: 8px; }
+    header p { color: #6e6e73; font-size: 14px; }
+
+    .stats { display: flex; gap: 16px; justify-content: center; margin-bottom: 32px; flex-wrap: wrap; }
+    .stat-card { background: white; border-radius: 12px; padding: 20px 32px; text-align: center; box-shadow: 0 1px 3px rgba(0,0,0,0.08); min-width: 140px; }
+    .stat-card .number { font-size: 36px; font-weight: 700; }
+    .stat-card .label { font-size: 13px; color: #6e6e73; margin-top: 4px; }
+    .stat-card.pass .number { color: #34c759; }
+    .stat-card.fail .number { color: #ff3b30; }
+    .stat-card.skip .number { color: #8e8e93; }
+    .stat-card.rate .number { color: #007aff; }
+
+    .progress-bar { background: #e5e5ea; border-radius: 8px; height: 12px; margin-bottom: 32px; overflow: hidden; display: flex; }
+    .progress-fill { height: 100%; }
+    .progress-fill.pass { background: #34c759; }
+    .progress-fill.fail { background: #ff3b30; }
+    .progress-fill.skip { background: #c7c7cc; }
+
+    .section { background: white; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 20px; overflow: hidden; }
+    .section-header { padding: 16px 20px; font-weight: 600; font-size: 16px; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center; cursor: pointer; }
+    .section-header:hover { background: #fafafa; }
+    .badge { font-size: 12px; padding: 3px 10px; border-radius: 12px; font-weight: 500; }
+    .badge-pass { background: #e8f9ee; color: #1b7d3a; }
+    .badge-fail { background: #ffeaea; color: #cc1818; }
+    .badge-mix { background: #fff8e6; color: #b8860b; }
+    .badge-skip { background: #f0f0f5; color: #6e6e73; }
+
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; padding: 10px 20px; font-size: 12px; color: #6e6e73; text-transform: uppercase; letter-spacing: 0.5px; background: #fafafa; border-bottom: 1px solid #f0f0f0; }
+    td { padding: 12px 20px; font-size: 14px; border-bottom: 1px solid #f5f5f5; vertical-align: top; }
+    tr:last-child td { border-bottom: none; }
+    tr:hover { background: #fafafa; }
+
+    .status { display: inline-flex; align-items: center; gap: 6px; font-weight: 500; font-size: 13px; padding: 4px 10px; border-radius: 6px; white-space: nowrap; }
+    .status-pass { background: #e8f9ee; color: #1b7d3a; }
+    .status-fail { background: #ffeaea; color: #cc1818; }
+    .status-skip { background: #f0f0f5; color: #6e6e73; }
+    .status-pending { background: #e8f1ff; color: #0a58ca; }
+
+    .pri { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 600; margin-right: 4px; }
+    .pri-p0 { background: #ffeaea; color: #cc1818; }
+    .pri-p1 { background: #fff8e6; color: #b8860b; }
+    .pri-p2 { background: #e8f1ff; color: #0a58ca; }
+
+    .finding { color: #6e6e73; font-size: 13px; }
+    .finding-fail { color: #cc1818; font-weight: 500; }
+    .finding-skip { color: #8e8e93; font-style: italic; }
+
+    .issue-card { padding: 20px; border-bottom: 1px solid #f0f0f0; }
+    .issue-header { margin-bottom: 12px; }
+    .issue-title { margin-left: 8px; font-size: 16px; font-weight: 700; }
+    .issue-title.fail { color: #cc1818; }
+    .issue-actions { margin: 10px 0 4px; }
+    .action-btn { display: inline-block; padding: 6px 14px; background: #f0f0f5; border-radius: 6px; font-size: 13px; font-weight: 500; color: #007aff; cursor: pointer; transition: background 0.15s; }
+    .action-btn:hover { background: #e0e0ea; }
+    .issue-detail { display: none; margin-top: 10px; padding: 14px 16px; background: #f9f9fb; border-radius: 8px; border-left: 3px solid #007aff; font-size: 13px; line-height: 1.6; }
+    .issue-detail.open { display: block; }
+    .detail-item { margin-bottom: 8px; }
+    .detail-item:last-child { margin-bottom: 0; }
+    .detail-item code { background: #eee; padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+
+    .tag { display: inline-block; font-size: 11px; padding: 2px 8px; border-radius: 4px; font-weight: 500; margin-left: 6px; }
+    .tag-fail { background: #ffeaea; color: #cc1818; }
+    .tag-flake { background: #fff8e6; color: #b8860b; }
+    .tag-needs-user { background: #f0f0f5; color: #6e6e73; }
+    .tag-needs-payment { background: #fff3e0; color: #e65100; }
+    .tag-needs-api { background: #e8f1ff; color: #0a58ca; }
+
+    .footer { text-align: center; margin-top: 32px; color: #6e6e73; font-size: 12px; }
+    .toggle-icon { transition: transform 0.2s; display: inline-block; }
+    .toggle-icon.collapsed { transform: rotate(-90deg); }
+    .collapsible { display: block; }
+    .collapsible.hidden { display: none; }
+
+    .blockers { background: white; border-radius: 12px; padding: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.08); margin-bottom: 20px; }
+    .blockers h3 { font-size: 15px; margin-bottom: 12px; }
+    .blockers ul { list-style: none; padding-left: 0; }
+    .blockers li { padding: 6px 0; font-size: 13px; color: #1d1d1f; border-bottom: 1px solid #f5f5f5; }
+    .blockers li:last-child { border-bottom: none; }
+    .blockers li strong { color: #cc1818; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <header>
+      <h1>AccountLevelGate — Test Results</h1>
+      <p>Experiment: <code>specs.premium.domains.AccountLevelGate</code> &nbsp;|&nbsp; FED: <code>wix-private/my-domains</code> &nbsp;|&nbsp; Entry: <code>manage.wix.com/account/domains</code></p>
+      <p style="margin-top:4px;">Last run: May 20, 2026 &nbsp;|&nbsp; Section 1 only &nbsp;|&nbsp; Automation user: <code>wixqatestdomainsautomation@test.com</code></p>
+    </header>
+
+    <div class="stats">
+      <div class="stat-card"><div class="number">79</div><div class="label">Total Tests</div></div>
+      <div class="stat-card pass"><div class="number">4</div><div class="label">Passed</div></div>
+      <div class="stat-card fail"><div class="number">1</div><div class="label">Failed</div></div>
+      <div class="stat-card skip"><div class="number">74</div><div class="label">Not Run</div></div>
+      <div class="stat-card rate"><div class="number">80%</div><div class="label">Pass Rate*</div></div>
+    </div>
+    <p style="text-align:center; color:#8e8e93; font-size:12px; margin-bottom:24px;">*Pass rate computed on 5 tests that executed (4 / 5). 74 tests blocked: 66 need additional test users or backend access, 8 runnable in other sections but not yet executed.</p>
+
+    <div class="progress-bar">
+      <div class="progress-fill pass" style="width: 5%;"></div>
+      <div class="progress-fill fail" style="width: 1.3%;"></div>
+      <div class="progress-fill skip" style="width: 93.7%;"></div>
+    </div>
+
+    <!-- Section 1 — Entry & Gate Page -->
+    <div class="section">
+      <div class="section-header" onclick="toggle('s1')">
+        <span><span class="toggle-icon" id="s1-icon">&#9660;</span> Section 1 — Entry & Gate Page</span>
+        <span class="badge badge-mix">4 / 5 passed &nbsp;·&nbsp; 6 blocked</span>
+      </div>
+      <div id="s1" class="collapsible">
+        <table>
+          <tr><th>Pri</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>My Domains list renders with "Buy a Domain" CTA</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">11.1s — CTA + Add Existing CTA visible inside mpContainer iframe</td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Clicking "Buy a Domain" opens AccountLevelGate (spec ON)</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">14.2s — Title "Find the perfect domain for your vision" + subtitle rendered</td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Voucher banner copy is visible on gate</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">11.0s — Free-1-year banner asserted</td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>/results route always renders AccountLevelGate (regardless of spec)</td><td><span class="status status-skip">&#9209; SKIPPED</span></td><td class="finding-skip">Direct nav broken for this user — iframe never attaches. Marked fixme.</td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>Direct URL /account/domains lands on My Domains list</td><td><span class="status status-pass">&#10003; PASS</span></td><td class="finding">13.0s — URL + iframe content asserted</td></tr>
+          <tr><td><span class="pri pri-p2">P2</span></td><td>Refresh preserves My Domains list state</td><td><span class="status status-fail">&#10007; FAIL</span></td><td class="finding-fail">40.6s — iframe didn't re-attach within 30s after reload (flake — first headless run passed in 17.5s)</td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>No sites & No domains user — full persona</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip">Needs no-sites + no-domains user <span class="tag tag-needs-user">needs user</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Free sites only & No domains</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs user</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Premium site & No domains</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs user</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Has domains user clicks "Buy a domain" CTA (persona variant)</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs user</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Has domains user clicks "Add an existing domain" &gt; "Connect domain"</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs user</span></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 2 — Purchase Flow -->
+    <div class="section">
+      <div class="section-header" onclick="toggle('s2')">
+        <span><span class="toggle-icon" id="s2-icon">&#9660;</span> Section 2 — Purchase Flow</span>
+        <span class="badge badge-skip">0 / 24 run &nbsp;·&nbsp; 2 runnable, 22 blocked</span>
+      </div>
+      <div id="s2" class="collapsible">
+        <table>
+          <tr><th>Pri</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Search available domain shows results page with pricing block</td><td><span class="status status-pending">&#9899; READY</span></td><td class="finding-skip">Runnable with current user — not yet executed</td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Clicking available domain card navigates forward (split or selector)</td><td><span class="status status-pending">&#9899; READY</span></td><td class="finding-skip">Runnable with current user — not yet executed</td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>E2E No sites, unsupported voucher .ai bundle</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs no-sites</span> <span class="tag tag-needs-payment">real payment</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>E2E No sites, supported voucher .com bundle (SALE)</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs no-sites</span> <span class="tag tag-needs-payment">real payment</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>E2E Free site &amp; no domain — Domain only</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs free-site</span> <span class="tag tag-needs-payment">real payment</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>E2E Free site &amp; no domain — Bundle on split page</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs free-site</span> <span class="tag tag-needs-payment">real payment</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>E2E Premium site &amp; no domain</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs premium-site</span> <span class="tag tag-needs-payment">real payment</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Multiple sites &amp; no domain — voucher-supported TLD bundle</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs multi-sites</span> <span class="tag tag-needs-payment">real payment</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Premium domain via Bundle</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-payment">real payment</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Pricing block — USD</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip">Needs pricing validator script</td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Pricing block — EUR</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip">Needs pricing validator script</td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Pricing block — GBP</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip">Needs pricing validator script</td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Pricing block — Tax-inclusive DE/FR</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip">Needs pricing validator script</td></tr>
+          <tr><td><span class="pri pri-p2">P2</span></td><td>Back navigation from split page (no-sites)</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs no-sites</span></td></tr>
+          <tr><td><span class="pri pri-p2">P2</span></td><td>Refresh on split page (no-sites)</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs no-sites</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Has-sites: Single free site triggers site selector with correct title</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs free-site</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Has-sites: Multiple sites — Premium badge + primary domain indicator</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs multi-sites</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Has-sites: Select free site → site-level split page</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs free-site</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Has-sites: Select premium site → cashier / purchase</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs premium-site</span></td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>Has-sites: "Continue without a site" side action</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs has-sites</span></td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>Has-sites: Search within site selector</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs has-sites</span></td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>Has-sites: Pagination with 5+ sites</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs 5+sites</span></td></tr>
+          <tr><td><span class="pri pri-p2">P2</span></td><td>Has-sites: Close modal — no MSID created</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs has-sites</span></td></tr>
+          <tr><td><span class="pri pri-p2">P2</span></td><td>Has-sites: Back from site-level split page</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs has-sites</span></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 3 — Connect Flow -->
+    <div class="section">
+      <div class="section-header" onclick="toggle('s3')">
+        <span><span class="toggle-icon" id="s3-icon">&#9660;</span> Section 3 — Connect Flow</span>
+        <span class="badge badge-skip">0 / 11 run &nbsp;·&nbsp; 2 runnable, 9 blocked</span>
+      </div>
+      <div id="s3" class="collapsible">
+        <table>
+          <tr><th>Pri</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Searching taken domain surfaces Connect CTA</td><td><span class="status status-pending">&#9899; READY</span></td><td class="finding-skip">Runnable with current user — not yet executed</td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Clicking Connect opens upgrade modal or site selector</td><td><span class="status status-pending">&#9899; READY</span></td><td class="finding-skip">Runnable with current user — not yet executed</td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Has-sites Free → site selector w/ "Assign {domain} to a site"</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs free-site</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Has-sites Select Free → site-level upgrade</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs free-site</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Has-sites Select Premium → site-level Connect</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs premium-site</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Premium site, non-Entri → Manual Connect</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs premium-site</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>No-sites taken domain opens upgrade modal</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs no-sites</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>No-sites premium plan creates MSID + assigns domain</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs no-sites</span> <span class="tag tag-needs-payment">real payment</span></td></tr>
+          <tr><td><span class="pri pri-p2">P2</span></td><td>No-sites cancel upgrade — no MSID created</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs no-sites</span></td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>Has-sites premium badge + BI 1090</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs premium-site</span></td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>Has-sites "Continue without a site"</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs has-sites</span></td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>Has-sites search within selector</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs has-sites</span></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 4 — Assign Flow -->
+    <div class="section">
+      <div class="section-header" onclick="toggle('s4')">
+        <span><span class="toggle-icon" id="s4-icon">&#9660;</span> Section 4 — Assign Flow</span>
+        <span class="badge badge-skip">0 / 4 run &nbsp;·&nbsp; 4 blocked</span>
+      </div>
+      <div id="s4" class="collapsible">
+        <table>
+          <tr><th>Pri</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Site selector opens from My Domains "Assign to site"</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs unassigned-domain</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Free site → site-level upgrade → domain assigned</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs unassigned-domain + free-site</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Premium site → success page → domain primary/non-primary</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs unassigned-domain + premium-site</span></td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>Premium badge + primary-domain indicators in selector</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs has-sites</span></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 5 — Site Selector Modal -->
+    <div class="section">
+      <div class="section-header" onclick="toggle('s5')">
+        <span><span class="toggle-icon" id="s5-icon">&#9660;</span> Section 5 — Site Selector Modal</span>
+        <span class="badge badge-skip">0 / 6 run &nbsp;·&nbsp; 1 runnable, 5 blocked</span>
+      </div>
+      <div id="s5" class="collapsible">
+        <table>
+          <tr><th>Pri</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>Modal title interpolates domain_name correctly (no raw placeholder)</td><td><span class="status status-pending">&#9899; READY</span></td><td class="finding-skip">Runnable with current user — not yet executed</td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>List rendering, 4 items per page, search placeholder</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs multi-sites</span></td></tr>
+          <tr><td><span class="pri pri-p2">P2</span></td><td>No eligible sites edge case</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs no-sites</span></td></tr>
+          <tr><td><span class="pri pri-p2">P2</span></td><td>Empty state on search with no match</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs has-sites</span></td></tr>
+          <tr><td><span class="pri pri-p2">P2</span></td><td>Escape key closes modal, focus returns</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs has-sites</span></td></tr>
+          <tr><td><span class="pri pri-p2">P2</span></td><td>Accessibility (aria, focus trap, keyboard nav)</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs has-sites</span></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 6 — Localization -->
+    <div class="section">
+      <div class="section-header" onclick="toggle('s6')">
+        <span><span class="toggle-icon" id="s6-icon">&#9660;</span> Section 6 — Localization</span>
+        <span class="badge badge-skip">0 / 6 run &nbsp;·&nbsp; 1 runnable, 5 blocked</span>
+      </div>
+      <div id="s6" class="collapsible">
+        <table>
+          <tr><th>Pri</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>Page title key resolves in EN (no raw key shown)</td><td><span class="status status-pending">&#9899; READY</span></td><td class="finding-skip">Runnable with current user — not yet executed</td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>"Assign {domain} to a site" title interpolates in EN</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip">Needs site selector reachable</td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>"Select a site for {domain}" title interpolates in EN</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip">Needs site selector reachable</td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>"Continue without a site" side action visible</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip">Needs site selector reachable</td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>All 4 keys translate in ES / DE / FR</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip">Needs locale switch confirmed</td></tr>
+          <tr><td><span class="pri pri-p2">P2</span></td><td>RTL layout (HE / AR) mirrors modal and list</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip">Needs locale switch confirmed</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 7 — BI Events -->
+    <div class="section">
+      <div class="section-header" onclick="toggle('s7')">
+        <span><span class="toggle-icon" id="s7-icon">&#9660;</span> Section 7 — BI Events</span>
+        <span class="badge badge-skip">0 / 8 run &nbsp;·&nbsp; 2 runnable, 6 blocked</span>
+      </div>
+      <div id="s7" class="collapsible">
+        <table>
+          <tr><th>Pri</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>BI 209: version="New Domains Gate" on My Domains load</td><td><span class="status status-pending">&#9899; READY</span></td><td class="finding-skip">Runnable with current user — not yet executed</td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>BI 1052: search_origin="Domains gate- Account Level"</td><td><span class="status status-pending">&#9899; READY</span></td><td class="finding-skip">Runnable with current user — not yet executed</td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>BI 309: view_mode="Gate Result Page- Account Level"</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip">Needs evid mapping confirmed</td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>BI 975: view_mode="Gate Result Page- Account Level"</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip">Needs evid mapping confirmed</td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>BI 1052 (variant 2): from results page</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip">Needs evid mapping confirmed</td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>BI 1053 / 1054: view_page="Domains results page - Account Level"</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip">Needs evid mapping confirmed</td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>BI 1090: site selector "Modal Loaded"</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip">Needs site selector reachable</td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>BI 1091: site selector "Site Selected" + MSID</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip">Needs site selector reachable</td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Section 8 — Regression & System Verification -->
+    <div class="section">
+      <div class="section-header" onclick="toggle('s8')">
+        <span><span class="toggle-icon" id="s8-icon">&#9660;</span> Section 8 — Regression &amp; System Verification</span>
+        <span class="badge badge-skip">0 / 8 run &nbsp;·&nbsp; 8 blocked</span>
+      </div>
+      <div id="s8" class="collapsible">
+        <table>
+          <tr><th>Pri</th><th>Test Case</th><th>Status</th><th>Finding</th></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>SBS + BM verification after purchase + site creation</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-api">needs SBS/BM API</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>SBS + BM verification after connect + site creation</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-api">needs SBS/BM API</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>My Domains list updates after new domain + site</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-payment">depends on purchase E2E</span></td></tr>
+          <tr><td><span class="pri pri-p0">P0</span></td><td>GEO pricing per GEO (DE / GB / IL)</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip">Needs gate-de-validate.mjs / gate-gb-validate.mjs</td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>Missing AccountLevelPurchaseDomain permission hides/disables CTA</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs perm-revoked user</span></td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>Network failure during MSID creation — shows retry, no orphan</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip">Needs network-fault injection</td></tr>
+          <tr><td><span class="pri pri-p1">P1</span></td><td>Multi-currency context preserved through checkout</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs multi-currency user</span></td></tr>
+          <tr><td><span class="pri pri-p2">P2</span></td><td>Concurrent site creation in another tab — no duplicate MSID</td><td><span class="status status-pending">&#9899; PENDING</span></td><td class="finding-skip"><span class="tag tag-needs-user">needs no-sites</span></td></tr>
+        </table>
+      </div>
+    </div>
+
+    <!-- Failures detail -->
+    <div class="section" style="border-left: 4px solid #ff3b30;">
+      <div class="section-header"><span>Failures (1) — Evidence &amp; Root Cause</span></div>
+
+      <div class="issue-card">
+        <div class="issue-header">
+          <strong>P2 — Refresh preserves My Domains list state</strong>
+          <span class="tag tag-flake">FLAKE / TIMING</span>
+        </div>
+        <div class="issue-actions">
+          <span class="action-btn" onclick="toggleDetail('detail-refresh')">View Root Cause &amp; Fix</span>
+        </div>
+        <div class="issue-detail" id="detail-refresh">
+          <div class="detail-item"><strong>Symptom:</strong> <code>TimeoutError: locator.waitFor: Timeout 30000ms exceeded</code> waiting for <code>iframe[src*="mpContainerStaticController"].contentFrame().locator(':text("Domains")')</code>.</div>
+          <div class="detail-item"><strong>Where:</strong> <code>account-level-gate.spec.ts:96</code> — after <code>page.reload()</code>.</div>
+          <div class="detail-item"><strong>Root Cause:</strong> After <code>page.reload()</code>, the dashboard chrome remounts the <code>mpContainerStaticController</code> iframe asynchronously. In <em>headed</em> mode the remount took longer than 30s; the same test passed in 17.5s in <em>headless</em>. Pure timing / flake.</div>
+          <div class="detail-item"><strong>Suggested Fix:</strong> Bump iframe re-attach timeout to 60s after reload, then wait an extra <code>networkidle</code> cycle before searching for content. Also: prefer <code>fl.locator(':text("Domains")').first().waitFor({ timeout: 60_000 })</code> instead of capturing a fresh <code>fl2</code> — the existing FrameLocator handle is stable across reloads.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Blockers / next steps -->
+    <div class="blockers">
+      <h3>Blockers — what unlocks the remaining 74 tests</h3>
+      <ul>
+        <li><strong>Persona test accounts</strong> — needed for ~40 tests across §1, §2, §3, §4: no-sites + no-domains, free-site only, premium-site only, multi-sites (free + premium), 5+ sites, has unassigned account-level domains, permissions-revoked.</li>
+        <li><strong>Sandbox / dry-run payment</strong> — needed for ~10 E2E purchase tests in §2 and §3 (real money risk in automation).</li>
+        <li><strong>SBS + BM API harness</strong> — needed for §8 system verification (subscription created, MSID created, domain linked).</li>
+        <li><strong>BI evid mappings confirmed</strong> — §7 currently has BI 209 and 1052 with verified evid; events 309 / 975 / 1053 / 1054 / 1090 / 1091 need engineering to confirm the actual evid query-param values before assertions can be written.</li>
+        <li><strong>Pricing validator scripts</strong> — §2 currency tests reference <code>gate-de-validate.mjs</code> / <code>gate-gb-validate.mjs</code>; point the helpers at them when located.</li>
+        <li><strong>Locale switch confirmed</strong> — §6 ES / DE / FR / HE / AR runs need the <code>wixLanguage</code> cookie tested + dashboard locale flow verified.</li>
+      </ul>
+    </div>
+
+    <div class="footer">
+      Generated by QA Automation &nbsp;|&nbsp; Guy Meir &nbsp;|&nbsp; Domains Team &nbsp;|&nbsp; May 20, 2026
+      <br>
+      Spec source: <code>premium-qa-cdd/02-Domains/account-level-gate/sled/tests/e2e/account-level-gate.spec.ts</code>
+    </div>
+  </div>
+
+  <script>
+    function toggle(id) {
+      const el = document.getElementById(id);
+      const icon = document.getElementById(id + '-icon');
+      el.classList.toggle('hidden');
+      if (icon) icon.classList.toggle('collapsed');
+    }
+    function toggleDetail(id) {
+      document.getElementById(id).classList.toggle('open');
+    }
+  </script>
+</body>
+</html>
